@@ -1,0 +1,23 @@
+{
+  "plugins": [
+    "hide-element",
+    "chapter-fold",
+    "expandable-chapters",
+    "favicon",
+    "lightbox",
+    "splitter",
+    "-lunr",
+    "pageview-count",
+    "ancre-navigation"
+  ],
+  "pluginsConfig": {
+    "favicon": {
+      "shortcut": "./img/avator.png.icon.ico",
+      "bookmark": "./img/avator.png.icon.ico"
+    },
+     "hide-element": {
+       "elements": [".gitbook-link"]
+     }
+  }
+
+}
