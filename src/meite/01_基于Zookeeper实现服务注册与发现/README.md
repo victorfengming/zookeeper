@@ -334,7 +334,193 @@ public class Test001 {
 
 
 
+```java
+String s = zooKeeper.create("/mayikt3", "mayikt3_content".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+```
+
+
+
+```cmd
+zk 正在链接等待...
+zk链接成功!!!
+开始创建节点
+/mayikt3
+
+Process finished with exit code 0
+```
+
+![1625128452457](README/1625128452457.png)
+
+会发现 - 创建完了没有 节点数据 ,
+
+就离谱
+
+因为我这个会话已经关闭了
+
+你如果有想要看到效果你可以搞一个等待
+
+```java
+        Thread.sleep(5000);
+```
+
+
+
+![1625128706675](README/1625128706675.png)
+
+就能看到一瞬间
+
+然后就
+
+![1625128738396](README/1625128738396.png)
+
+
+
+```java
+        /**
+         * zk 节点分为4种类型
+         * 1. 临时节点 - 会话关闭就没了 CreateMode.EPHEMERAL
+         * 2. 持久节点 - 存到硬盘中,它不没 CreateMode.PERSISTENT
+         * 3. 临时有序号节点 CreateMode.EPHEMERAL_SEQUENTIAL
+         * 4. 持久有序号节点 CreateMode.PERSISTENT_SEQUENTIAL
+         */
+```
+
+---
+
+不能直接创建 多级别 节点
+
+```java
+String s = zooKeeper.create("/victor/s1", "content1".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
+        System.out.println(s);
+```
+
+
+
+```shell
+zk 正在链接等待...
+zk链接成功!!!
+开始创建节点
+Exception in thread "main" org.apache.zookeeper.KeeperException$NoNodeException: KeeperErrorCode = NoNode for /victor/s1
+	at org.apache.zookeeper.KeeperException.create(KeeperException.java:111)
+	at org.apache.zookeeper.KeeperException.create(KeeperException.java:51)
+	at org.apache.zookeeper.ZooKeeper.create(ZooKeeper.java:783)
+	at com.mayikt.zk.Test001.main(Test001.java:68)
+
+Process finished with exit code 1
+
+```
+
+---
+
+acl权限
+
+我们之前创建的 权限 是都可以访问的
+
+
+
+---
+
 # 09.Zookeeper节点ACL权限控制.mp4
+
+```java
+package com.mayikt.zk;
+
+import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.ACL;
+import org.apache.zookeeper.data.Id;
+import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+
+/**
+ * ClassName: Test001 <br/>
+ * Description: Test001 <br/>
+ * Date: 2021-07-01 15:58 <br/>
+ * <br/>
+ *
+ * @author yufengming
+ * @version 产品版本信息 2021-07-01 15:58 yufengming(victorefengming.gitee.io) 新建<br/>
+ * @project mayikt_zk
+ * @package com.mayikt.zk
+ * @email victorfengming@163.com
+ * <p>
+ * 修改记录
+ */
+public class Test002 {
+    //         * 参数1. 链接地址
+
+    private static final String ADDRES = "116.62.194.162:2181";
+    //         * 参数2. zk超时事件
+    private static final int TIMEOUT = 5000;
+
+    //         * 参数3. 事件通知
+
+    // countDownLatch计数器
+    private static CountDownLatch countDownLatch = new CountDownLatch(1);
+
+    public static void main(String[] args) throws IOException, KeeperException, InterruptedException, NoSuchAlgorithmException {
+        // zk 核心节点 + 事件通知
+        // 节点路径 和节点 value
+        /**
+         * 参数1. 链接地址
+         * 参数2. zk超时事件
+         * 参数3. 事件通知
+         */
+
+        // 1. 创建 zk链接
+        ZooKeeper zooKeeper = new ZooKeeper(ADDRES, TIMEOUT, new Watcher() {
+            @Override
+            public void process(WatchedEvent watchedEvent) {
+                Event.KeeperState state = watchedEvent.getState();
+                if (state == Event.KeeperState.SyncConnected) {
+                    System.out.println("zk链接成功!!!");
+                    // 计数器减一
+                    countDownLatch.countDown();
+                }
+            }
+        });
+
+        System.out.println("zk 正在链接等待...");
+        // 计数器 结果必须为0 才能继续执行
+        countDownLatch.await();
+        System.out.println("开始创建节点");
+
+        // 1.2 .创建账号权限 admin可以实现读写操作
+        Id id1 = new Id("digest", DigestAuthenticationProvider.generateDigest("admin:admin123"));
+        ACL acl1 = new ACL(ZooDefs.Perms.ALL, id1);
+
+// 3.创建权限guest 只允许做读操作
+        Id id2 = new Id("digest", DigestAuthenticationProvider.generateDigest("guest:guest123"));
+        ACL acl2 = new ACL(ZooDefs.Perms.READ, id2);
+
+
+        // 4.添加该账号
+        ArrayList<ACL> aces = new ArrayList<ACL>();
+        aces.add(acl1);
+        aces.add(acl2);
+
+
+        // 2. 创建我门的节点
+        // 参数1 路径名称
+        // 参数2 节点value
+        // 参数3. 节点权限 acl        OPEN_ACL_UNSAFE 开放权限
+        // 参数4 节点类型 临时和永久
+
+        String s = zooKeeper.create("/meite", "content".getBytes(), aces, CreateMode.PERSISTENT);
+        System.out.println(s);
+
+
+    }
+}
+
+```
+
+![1625129949201](README/1625129949201.png)
+
+但是 meite下面没有值,因为没有权限查看
 
 
 
