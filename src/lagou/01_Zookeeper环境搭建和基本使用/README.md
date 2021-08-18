@@ -87,7 +87,17 @@ Observer,Follower和Observer都能提供读服务，唯⼀的区别在于**Obser
 
 
 
+②会话(session)
+Session指客户端会话,y一个客户端连接是指客户端和服务端之间的一个TCP长连接，Zookeeper对外的服务端口默认为2181，客户端启动的时候，首先会与服务器建立一个TCP连接，从第一次连接建立开始，客户端会话的生命周期也开始了，通过这个连接，客户端能够心跳检测与服务器保持有效的会话，也能够向Zookeeper服务器发送请求并接受响应，同时还能够通过该连接接受来自服务器的Watch事件通知。
 
+③数据节点(Znode)
+在谈到分布式的时候，我们通常说的“节点"是指组成集群的每一台机器。然而，在ZooKeeper中，“节点"分为两类，第一类同样是指构成集群的机器，我们称之为机器节点﹔第二类则是指数据模型中的数据单元，我们称之为数据节点―—ZNode。ZooKeeper将所有数据存储在内存中，数据模型是一棵树(ZNode Tree)，由斜杠（I)进行分割的路径，就是一个Znode，例如/app/path1。每个ZNode上都会保存自己的数据内容，同时还会保存一系列属性信息。
+
+④版本
+刚刚我们提到，Zookeeper的每个Znode上都会存储数据，对于每个ZNode,Zookeeper都会为其维护一个叫作Stat的数据结构，Stat记录了这个ZNode的三个数据版本，分别是version(当前ZNode的版本) 、cversion(当前ZNode子节点的版本)、aversion(当前ZNode的ACL版本)。
+
+5 Watcher (事件监听器)
+Wathcer(事件监听器)，是Zookeeper中一个很重要的特性，Zookeeper允许用户在指定节点上注册一些Watcher，并且在一些特定事件触发的时候，Zookeeper服务端会将事件通知到感兴趣的客户端，该机制是zookeeper实现分布式协调服务的重要特性
 
 
 
