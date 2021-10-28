@@ -1,0 +1,393 @@
+
+<!DOCTYPE HTML>
+<html lang="zh-hans" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>03_Zookeeper集群环境搭建 · zookeeper</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="Victor <victorfengming@163.com>">
+        
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-code/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-chapter-fold/chapter-fold.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-expandable-chapters/expandable-chapters.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-lightbox/css/lightbox.min.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-splitter/splitter.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-pageview-count/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-ancre-navigation/style/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search-plus/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-prism/prism-atom-dark.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-tbfed-pagefooter/footer.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="../04_Zookeeper一致性原理/" />
+    
+    
+    <link rel="prev" href="../02_基于Zookeeper实现分布式锁/" />
+    
+
+    
+        <link rel="shortcut icon" href='../../img/avator.png.icon.ico' type="image/x-icon">
+    
+    
+        <link rel="bookmark" href='../../img/avator.png.icon.ico' type="image/x-icon">
+    
+    
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="输入并搜索" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+    
+        
+        <li>
+            <a href="https://victorfengming.gitee.io/index/gitbook/" target="_blank" class="custom-link">文档索引页</a>
+        </li>
+    
+    
+
+    
+    <li class="divider"></li>
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../">
+            
+                <a href="../../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../01_基于Zookeeper实现服务注册与发现/">
+            
+                <a href="../01_基于Zookeeper实现服务注册与发现/">
+            
+                    
+                    01_基于Zookeeper实现服务注册与发现
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../02_基于Zookeeper实现分布式锁/">
+            
+                <a href="../02_基于Zookeeper实现分布式锁/">
+            
+                    
+                    02_基于Zookeeper实现分布式锁
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.4" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    03_Zookeeper集群环境搭建
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../04_Zookeeper一致性原理/">
+            
+                <a href="../04_Zookeeper一致性原理/">
+            
+                    
+                    04_Zookeeper一致性原理
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            本书使用 GitBook 发布
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../.." >03_Zookeeper集群环境搭建</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div class="search-plus" id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <html><head></head><body><div id="anchor-navigation-ex-navbar"><i class="fa fa-anchor"></i><ul><li><span class="title-icon "></span><a href="#01zookeeper&#x96C6;&#x7FA4;&#x9009;&#x4E3E;&#x6548;&#x679C;&#x6F14;&#x793A;mp4"><b></b>01.Zookeeper&#x96C6;&#x7FA4;&#x9009;&#x4E3E;&#x6548;&#x679C;&#x6F14;&#x793A;.mp4</a></li><li><span class="title-icon "></span><a href="#02&#x5206;&#x5E03;&#x5F0F;&#x7406;&#x8BBA;&#x5F3A;&#x4E00;&#x81F4;&#x6027;&#x6982;&#x5FF5;mp4"><b></b>02.&#x5206;&#x5E03;&#x5F0F;&#x7406;&#x8BBA;&#x5F3A;&#x4E00;&#x81F4;&#x6027;&#x6982;&#x5FF5;.mp4</a></li><li><span class="title-icon "></span><a href="#03&#x5206;&#x5E03;&#x5F0F;&#x7406;&#x8BBA;&#x6700;&#x7EC8;&#x4E00;&#x81F4;&#x6027;&#x6982;&#x5FF5;mp4"><b></b>03.&#x5206;&#x5E03;&#x5F0F;&#x7406;&#x8BBA;&#x6700;&#x7EC8;&#x4E00;&#x81F4;&#x6027;&#x6982;&#x5FF5;.mp4</a></li><li><span class="title-icon "></span><a href="#04&#x751F;&#x6D3B;&#x6848;&#x4F8B;&#x5B9E;&#x9645;&#x8BB2;&#x89E3;&#x4E00;&#x81F4;&#x6027;&#x539F;&#x7406;mp4"><b></b>04.&#x751F;&#x6D3B;&#x6848;&#x4F8B;&#x5B9E;&#x9645;&#x8BB2;&#x89E3;&#x4E00;&#x81F4;&#x6027;&#x539F;&#x7406;.mp4</a></li><li><span class="title-icon "></span><a href="#05zookeeper&#x96C6;&#x7FA4;&#x9009;&#x4E3E;&#x539F;&#x7406;&#x7B56;&#x7565;mp4"><b></b>05.Zookeeper&#x96C6;&#x7FA4;&#x9009;&#x4E3E;&#x539F;&#x7406;&#x7B56;&#x7565;.mp4</a></li><li><span class="title-icon "></span><a href="#06&#x6784;&#x5EFA;zookeeper&#x96C6;&#x7FA4;&#x73AF;&#x5883;01mp4"><b></b>06.&#x6784;&#x5EFA;Zookeeper&#x96C6;&#x7FA4;&#x73AF;&#x5883;01.mp4</a></li><li><span class="title-icon "></span><a href="#07&#x6784;&#x5EFA;zookeeper&#x96C6;&#x7FA4;&#x73AF;&#x5883;02mp4"><b></b>07.&#x6784;&#x5EFA;Zookeeper&#x96C6;&#x7FA4;&#x73AF;&#x5883;02.mp4</a></li><li><span class="title-icon "></span><a href="#08&#x4E3A;&#x4EC0;&#x4E48;zookeeper&#x96C6;&#x7FA4;&#x8282;&#x70B9;&#x4E00;&#x5B9A;&#x8981;&#x662F;&#x5947;&#x6570;mp4"><b></b>08.&#x4E3A;&#x4EC0;&#x4E48;Zookeeper&#x96C6;&#x7FA4;&#x8282;&#x70B9;&#x4E00;&#x5B9A;&#x8981;&#x662F;&#x5947;&#x6570;.mp4</a></li></ul></div><a href="#01zookeeper&#x96C6;&#x7FA4;&#x9009;&#x4E3E;&#x6548;&#x679C;&#x6F14;&#x793A;mp4" id="anchorNavigationExGoTop"><i class="fa fa-arrow-up"></i></a><h1 id="01zookeeper&#x96C6;&#x7FA4;&#x9009;&#x4E3E;&#x6548;&#x679C;&#x6F14;&#x793A;mp4"><a name="01zookeeper&#x96C6;&#x7FA4;&#x9009;&#x4E3E;&#x6548;&#x679C;&#x6F14;&#x793A;mp4" class="anchor-navigation-ex-anchor" href="#01zookeeper&#x96C6;&#x7FA4;&#x9009;&#x4E3E;&#x6548;&#x679C;&#x6F14;&#x793A;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>01.Zookeeper&#x96C6;&#x7FA4;&#x9009;&#x4E3E;&#x6548;&#x679C;&#x6F14;&#x793A;.mp4</h1>
+<p>zk&#x96C6;&#x7FA4; </p>
+<ol>
+<li>&#x5F3A;&#x5236;&#x4E00;&#x81F4;&#x6027;,&#x5F31;&#x4E00;&#x81F4;&#x6027;,&#x6700;&#x7EC8;&#x4E00;&#x81F4;&#x6027; &#x6982;&#x5FF5;</li>
+<li>&#x5206;&#x533A;&#x5BB9;&#x9519;CAP&#x6982;&#x5FF5;,&#x4E3A;&#x4EC0;&#x4E48;&#x4E0D;&#x80FD;&#x4E09;&#x8005;&#x5168;&#x90E8;&#x517C;&#x5BB9;</li>
+<li>zk&#x4E00;&#x81F4;&#x6027;zab&#x534F;&#x8BAE;&#x5E95;&#x5C42;&#x539F;&#x7406;</li>
+<li>&#x4E3A;&#x4EC0;&#x4E48;zk&#x96C6;&#x7FA4;&#x8282;&#x70B9;&#x4E00;&#x5B9A;&#x8981;&#x662F;&#x5947;&#x6570;</li>
+</ol>
+<blockquote>
+<p>zk&#x96C6;&#x7FA4;&#x8282;&#x70B9;&#x6700;&#x597D;&#x662F;&#x5947;&#x6570;, &#x57FA;&#x672C;&#x89C4;&#x5219;,&#x5269;&#x4F59;&#x8282;&#x70B9;&#x7684;&#x603B;&#x6570;&#x5927;&#x4E8E;(n) &#x96C6;&#x7FA4;&#x8282;&#x70B9;&#x603B;&#x6570;/2 ,zk&#x624D;&#x53EF;&#x4EE5;&#x6B63;&#x5E38;&#x8FD0;&#x884C;</p>
+</blockquote>
+<p>n = 3,&#x5B95;&#x673A;&#x4E86;1&#x53F0;,&#x6574;&#x4E2A;&#x96C6;&#x7FA4;&#x53EF;&#x4EE5;&#x8FD0;&#x884C;</p>
+<h1 id="02&#x5206;&#x5E03;&#x5F0F;&#x7406;&#x8BBA;&#x5F3A;&#x4E00;&#x81F4;&#x6027;&#x6982;&#x5FF5;mp4"><a name="02&#x5206;&#x5E03;&#x5F0F;&#x7406;&#x8BBA;&#x5F3A;&#x4E00;&#x81F4;&#x6027;&#x6982;&#x5FF5;mp4" class="anchor-navigation-ex-anchor" href="#02&#x5206;&#x5E03;&#x5F0F;&#x7406;&#x8BBA;&#x5F3A;&#x4E00;&#x81F4;&#x6027;&#x6982;&#x5FF5;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>02.&#x5206;&#x5E03;&#x5F0F;&#x7406;&#x8BBA;&#x5F3A;&#x4E00;&#x81F4;&#x6027;&#x6982;&#x5FF5;.mp4</h1>
+<p><a href="README/1625213630724.png" data-lightbox="fe70a967-9e3d-4521-8406-2e630b443482" data-title="1625213630724"><img src="README/1625213630724.png" alt="1625213630724"></a></p>
+<p>mysql&#x96C6;&#x7FA4; &#x8868;&#x7ED3;&#x6784;&#x90FD;&#x76F8;&#x540C;</p>
+<p>&#x5F3A;&#x4E00;&#x81F4;&#x6027;&#x6982;&#x5FF5;: &#x4E5F;&#x5C31;&#x662F;&#x6B65;&#x9AA4;1&#x4FEE;&#x6539;&#x4E86;userName&#x4E3A;mayitk,&#x5E03;&#x7F6E;&#x4E00;&#x5B9A;&#x8BFB;&#x53D6;&#x5230;&#x7ED3;&#x679C;&#x4E5F;&#x662F;&#x4E3A;mayitk;</p>
+<p>&#x5B9E;&#x73B0;&#x65B9;&#x5F0F;: mysql&#x4E3B;&#x4ECE;&#x590D;&#x5236; &#x975E;&#x5E38;&#x8FC5;&#x901F;&#x540C;&#x6B65;&#x6216;&#x8005;&#x662F;&#x4F7F;&#x7528;&#x9501;&#x673A;&#x5236;&#x5FC5;&#x987B;&#x7B49;&#x5F85;mysql1&#x6570;&#x636E;&#x540C;&#x6B65;&#x5230;mysql2 &#x8FD9;&#x65F6;&#x5019;&#x624D;&#x53EF;&#x4EE5;&#x8BFB;&#x53D6;</p>
+<h1 id="03&#x5206;&#x5E03;&#x5F0F;&#x7406;&#x8BBA;&#x6700;&#x7EC8;&#x4E00;&#x81F4;&#x6027;&#x6982;&#x5FF5;mp4"><a name="03&#x5206;&#x5E03;&#x5F0F;&#x7406;&#x8BBA;&#x6700;&#x7EC8;&#x4E00;&#x81F4;&#x6027;&#x6982;&#x5FF5;mp4" class="anchor-navigation-ex-anchor" href="#03&#x5206;&#x5E03;&#x5F0F;&#x7406;&#x8BBA;&#x6700;&#x7EC8;&#x4E00;&#x81F4;&#x6027;&#x6982;&#x5FF5;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>03.&#x5206;&#x5E03;&#x5F0F;&#x7406;&#x8BBA;&#x6700;&#x7EC8;&#x4E00;&#x81F4;&#x6027;&#x6982;&#x5FF5;.mp4</h1>
+<p>&#x6CE8;&#x610F;: &#x5728;&#x5206;&#x5E03;&#x5F0F;&#x4E2D;&#x4E0D;&#x53EF;&#x80FD;&#x4FDD;&#x8BC1;&#x5F3A;&#x4E00;&#x81F4;&#x6027;</p>
+<p>&#x5F31;&#x4E00;&#x81F4;&#x6027;: &#x4E5F;&#x5C31;&#x662F;&#x6B65;&#x9AA4;1&#x4FEE;&#x6539;&#x4E86; userName &#x4E3A; mayikt,&#x5141;&#x8BB8;&#x6B65;&#x9AA4;2 &#x8BFB;&#x53D6;&#x65F6;&#x5019; &#x8FD8;&#x662F;&#x539F;&#x6765;&#x6570;&#x636E;;</p>
+<p>&#x6700;&#x7EC8;&#x4E00;&#x81F4;&#x6027;: &#x5728;&#x5F31;&#x4E00;&#x81F4;&#x6027;&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#x8FDB;&#x884C;&#x4F18;&#x5316;,&#x5141;&#x8BB8;&#x6B65;&#x9AA4;2&#x8FDB;&#x884C;&#x810F;&#x5835;,&#x6700;&#x7EC8;&#x8981;&#x8FDB;&#x884C;&#x540C;&#x6B65;(&#x91CD;&#x8BD5;/&#x4EBA;&#x5DE5;&#x8865;&#x507F;)</p>
+<h1 id="04&#x751F;&#x6D3B;&#x6848;&#x4F8B;&#x5B9E;&#x9645;&#x8BB2;&#x89E3;&#x4E00;&#x81F4;&#x6027;&#x539F;&#x7406;mp4"><a name="04&#x751F;&#x6D3B;&#x6848;&#x4F8B;&#x5B9E;&#x9645;&#x8BB2;&#x89E3;&#x4E00;&#x81F4;&#x6027;&#x539F;&#x7406;mp4" class="anchor-navigation-ex-anchor" href="#04&#x751F;&#x6D3B;&#x6848;&#x4F8B;&#x5B9E;&#x9645;&#x8BB2;&#x89E3;&#x4E00;&#x81F4;&#x6027;&#x539F;&#x7406;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>04.&#x751F;&#x6D3B;&#x6848;&#x4F8B;&#x5B9E;&#x9645;&#x8BB2;&#x89E3;&#x4E00;&#x81F4;&#x6027;&#x539F;&#x7406;.mp4</h1>
+<p>&#x8D85;&#x8FC7;&#x4E00;&#x534A;&#x7684;&#x53CD;&#x9988;</p>
+<p>&#x539F;&#x7406;: &#x6295;&#x7968;&#x8FC7;&#x534A;&#x673A;&#x5236;,zk&#x9009;&#x4E3E;&#x7B56;&#x7565;&#x9886;&#x5BFC;&#x5C31;&#x91C7;&#x7528;&#x8FC7;&#x534A;&#x673A;&#x5236;</p>
+<p>&#x9884;&#x63D0;&#x4EA4;&#xFF08;&#x4F60;&#x4EEC;&#x662F;&#x5426;&#x542C;&#x61C2;&gt;?&#xFF09;&#x7B49;&#x5F85;&#x4F60;&#x4EEC;&#x56DE;&#x590D;&#x8FC7;&#x534A;&#x7684;&#x5B66;&#x5458;&#x90FD;&#x542C;&#x61C2;&#x7684;&#x8BDD;&#x6267;&#x884C;&#x4E0B;&#x4E00;&#x6B65;&#x6D41;&#x7A0B;
+2pc&#x4E24;&#x9636;&#x6BB5;&#x63D0;&#x4EA4;&#x534F;&#x8BAE;;
+I
+&#x8FC7;&#x7A0B;&#x4E2D;&#x5B58;&#x5728;:&#x9884;&#x63D0;&#x4EA4;&#x3001;&#x63A5;&#x53D7;&#x56DE;&#x590D;&#x6267;&#x884C;&#x8BF7;&#x6C42;&#x7C7B;&#x4F3C;2PC&#x4E24;&#x9636;&#x6BB5;&#x63D0;&#x4EA4;&#x8FC7;&#x534A;&#x673A;&#x5236;</p>
+<h1 id="05zookeeper&#x96C6;&#x7FA4;&#x9009;&#x4E3E;&#x539F;&#x7406;&#x7B56;&#x7565;mp4"><a name="05zookeeper&#x96C6;&#x7FA4;&#x9009;&#x4E3E;&#x539F;&#x7406;&#x7B56;&#x7565;mp4" class="anchor-navigation-ex-anchor" href="#05zookeeper&#x96C6;&#x7FA4;&#x9009;&#x4E3E;&#x539F;&#x7406;&#x7B56;&#x7565;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>05.Zookeeper&#x96C6;&#x7FA4;&#x9009;&#x4E3E;&#x539F;&#x7406;&#x7B56;&#x7565;.mp4</h1>
+<p>04:19</p>
+<h1 id="06&#x6784;&#x5EFA;zookeeper&#x96C6;&#x7FA4;&#x73AF;&#x5883;01mp4"><a name="06&#x6784;&#x5EFA;zookeeper&#x96C6;&#x7FA4;&#x73AF;&#x5883;01mp4" class="anchor-navigation-ex-anchor" href="#06&#x6784;&#x5EFA;zookeeper&#x96C6;&#x7FA4;&#x73AF;&#x5883;01mp4"><i class="fa fa-link" aria-hidden="true"></i></a>06.&#x6784;&#x5EFA;Zookeeper&#x96C6;&#x7FA4;&#x73AF;&#x5883;01.mp4</h1>
+<h1 id="07&#x6784;&#x5EFA;zookeeper&#x96C6;&#x7FA4;&#x73AF;&#x5883;02mp4"><a name="07&#x6784;&#x5EFA;zookeeper&#x96C6;&#x7FA4;&#x73AF;&#x5883;02mp4" class="anchor-navigation-ex-anchor" href="#07&#x6784;&#x5EFA;zookeeper&#x96C6;&#x7FA4;&#x73AF;&#x5883;02mp4"><i class="fa fa-link" aria-hidden="true"></i></a>07.&#x6784;&#x5EFA;Zookeeper&#x96C6;&#x7FA4;&#x73AF;&#x5883;02.mp4</h1>
+<h1 id="08&#x4E3A;&#x4EC0;&#x4E48;zookeeper&#x96C6;&#x7FA4;&#x8282;&#x70B9;&#x4E00;&#x5B9A;&#x8981;&#x662F;&#x5947;&#x6570;mp4"><a name="08&#x4E3A;&#x4EC0;&#x4E48;zookeeper&#x96C6;&#x7FA4;&#x8282;&#x70B9;&#x4E00;&#x5B9A;&#x8981;&#x662F;&#x5947;&#x6570;mp4" class="anchor-navigation-ex-anchor" href="#08&#x4E3A;&#x4EC0;&#x4E48;zookeeper&#x96C6;&#x7FA4;&#x8282;&#x70B9;&#x4E00;&#x5B9A;&#x8981;&#x662F;&#x5947;&#x6570;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>08.&#x4E3A;&#x4EC0;&#x4E48;Zookeeper&#x96C6;&#x7FA4;&#x8282;&#x70B9;&#x4E00;&#x5B9A;&#x8981;&#x662F;&#x5947;&#x6570;.mp4</h1>
+<p></p><hr><div id="vcomments"></div><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script>new Valine({el: "#vcomments",appId: 'CHjATxRcQrXst8eJrdwX0vjz-gzGzoHsz',appKey: 'nWerbwV2WMAxOEmAMkJKvXzs',placeholder: 'Just go go',avatar: '',meta: undefined,pageSize: 10,lang: 'zh-CN',recordIP: false})</script> <p></p>
+<footer class="page-footer"><span class="copyright">victorfengming.gitee.io&#xFF0C;&#x4F7F;&#x7528;<a href="https://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank">&#x7F72;&#x540D;4.0&#x56FD;&#x9645;(CC BY 4.0)&#x534F;&#x8BAE;</a>&#x53D1;&#x5E03; all right reserved&#xFF0C;powered by Gitbook</span><span class="footer-modification">&#x6700;&#x540E;&#x66F4;&#x65B0;&#xFF1A;
+2021-07-02 16:53:24
+</span></footer></body></html>
+<script>console.log("plugin-popup....");document.onclick = function(e){ e.target.tagName === "IMG" && window.open(e.target.src,e.target.src)}</script><style>img{cursor:pointer}</style>
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="../02_基于Zookeeper实现分布式锁/" class="navigation navigation-prev " aria-label="Previous page: 02_基于Zookeeper实现分布式锁">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="../04_Zookeeper一致性原理/" class="navigation navigation-next " aria-label="Next page: 04_Zookeeper一致性原理">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"03_Zookeeper集群环境搭建","level":"1.4","depth":1,"next":{"title":"04_Zookeeper一致性原理","level":"1.5","depth":1,"path":"meite/04_Zookeeper一致性原理/README.md","ref":"meite/04_Zookeeper一致性原理/README.md","articles":[]},"previous":{"title":"02_基于Zookeeper实现分布式锁","level":"1.3","depth":1,"path":"meite/02_基于Zookeeper实现分布式锁/README.md","ref":"meite/02_基于Zookeeper实现分布式锁/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["code","valine","hide-element","chapter-fold","expandable-chapters","favicon","lightbox","splitter","-lunr","pageview-count","ancre-navigation","-search","search-plus","-highlight","popup","prism","prism-themes","-sharing","sharing-plus","tbfed-pagefooter","toolbar-button"],"root":"./src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"tbfed-pagefooter":{"copyright":"victorfengming.gitee.io，使用<a href='https://creativecommons.org/licenses/by/4.0/deed.zh'>署名4.0国际(CC BY 4.0)协议</a>发布","modify_label":"最后更新：","modify_format":"YYYY-MM-DD HH:mm:ss"},"chapter-fold":{},"prism":{"css":["prism-themes/themes/prism-atom-dark.css"]},"toolbar-button":{"label":"下载PDF","url":"https://victorfengming.gitee.io/zookeeper/","icon":"fa-file-pdf-o"},"splitter":{},"sharing-plus":{"qq":false,"all":["facebook","google","twitter","instapaper","linkedin","pocket","stumbleupon"],"douban":false,"facebook":true,"weibo":false,"instapaper":false,"whatsapp":false,"hatenaBookmark":false,"twitter":true,"messenger":false,"line":false,"vk":false,"pocket":true,"google":false,"viber":false,"stumbleupon":false,"qzone":false,"linkedin":false},"popup":{},"code":{"copyButtons":true},"hide-element":{"elements":[".gitbook-link"]},"fontsettings":{"theme":"white","family":"sans","size":2},"favicon":{"shortcut":"./img/avator.png.icon.ico","bookmark":"./img/avator.png.icon.ico"},"lightbox":{"jquery":true,"sameUuid":false},"pageview-count":{},"prism-themes":{},"ancre-navigation":{"showLevel":true,"associatedWithSummary":true,"mode":"float","printLog":false,"multipleH1":true,"float":{"showLevelIcon":false,"level1Icon":"","level2Icon":"","level3Icon":""},"pageTop":{"showLevelIcon":false,"level1Icon":"","level2Icon":"","level3Icon":""}},"sharing":{"qq":true,"all":["douban","facebook","google","instapaper","line","linkedin","messenger","pocket","qq","qzone","stumbleupon","twitter","viber","vk","weibo","whatsapp"],"douban":false,"facebook":false,"weibo":true,"instapaper":false,"whatsapp":false,"hatenaBookmark":false,"twitter":true,"messenger":false,"line":false,"vk":false,"pocket":false,"google":false,"viber":false,"stumbleupon":false,"qzone":true,"linkedin":false},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"expandable-chapters":{},"valine":{"placeholder":"Just go go","avatar":"","pageSize":10,"lang":"zh-CN","recordIP":false,"appId":"CHjATxRcQrXst8eJrdwX0vjz-gzGzoHsz","appKey":"nWerbwV2WMAxOEmAMkJKvXzs"},"search-plus":{}},"theme":"default","author":"Victor <victorfengming@163.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"zookeeper","language":"zh-hans","links":{"sidebar":{"文档索引页":"https://victorfengming.gitee.io/index/gitbook/"}},"gitbook":"3.2.3","description":"zookeeper,分布式协调框架"},"file":{"path":"meite/03_Zookeeper集群环境搭建/README.md","mtime":"2021-07-02T08:53:24.691Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-10-28T03:01:09.587Z"},"basePath":"../..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-code/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-hide-element/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-chapter-fold/chapter-fold.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-expandable-chapters/expandable-chapters.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lightbox/js/lightbox.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-splitter/splitter.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-pageview-count/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search-plus/jquery.mark.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search-plus/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-sharing-plus/buttons.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-toolbar-button/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

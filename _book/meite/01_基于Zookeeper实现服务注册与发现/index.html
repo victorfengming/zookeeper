@@ -1,0 +1,727 @@
+
+<!DOCTYPE HTML>
+<html lang="zh-hans" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>01_基于Zookeeper实现服务注册与发现 · zookeeper</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="Victor <victorfengming@163.com>">
+        
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-code/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-chapter-fold/chapter-fold.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-expandable-chapters/expandable-chapters.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-lightbox/css/lightbox.min.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-splitter/splitter.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-pageview-count/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-ancre-navigation/style/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search-plus/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-prism/prism-atom-dark.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-tbfed-pagefooter/footer.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="../02_基于Zookeeper实现分布式锁/" />
+    
+    
+    <link rel="prev" href="../../" />
+    
+
+    
+        <link rel="shortcut icon" href='../../img/avator.png.icon.ico' type="image/x-icon">
+    
+    
+        <link rel="bookmark" href='../../img/avator.png.icon.ico' type="image/x-icon">
+    
+    
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="输入并搜索" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+    
+        
+        <li>
+            <a href="https://victorfengming.gitee.io/index/gitbook/" target="_blank" class="custom-link">文档索引页</a>
+        </li>
+    
+    
+
+    
+    <li class="divider"></li>
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../">
+            
+                <a href="../../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    01_基于Zookeeper实现服务注册与发现
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../02_基于Zookeeper实现分布式锁/">
+            
+                <a href="../02_基于Zookeeper实现分布式锁/">
+            
+                    
+                    02_基于Zookeeper实现分布式锁
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../03_Zookeeper集群环境搭建/">
+            
+                <a href="../03_Zookeeper集群环境搭建/">
+            
+                    
+                    03_Zookeeper集群环境搭建
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../04_Zookeeper一致性原理/">
+            
+                <a href="../04_Zookeeper一致性原理/">
+            
+                    
+                    04_Zookeeper一致性原理
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            本书使用 GitBook 发布
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../.." >01_基于Zookeeper实现服务注册与发现</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div class="search-plus" id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <html><head></head><body><div id="anchor-navigation-ex-navbar"><i class="fa fa-anchor"></i><ul><li><span class="title-icon "></span><a href="#01&#x57FA;&#x4E8E;zookeeper&#x5B9E;&#x73B0;&#x52A8;&#x6001;&#x8D1F;&#x8F7D;&#x5747;&#x8861;&#x8BFE;&#x7A0B;&#x4ECB;&#x7ECD;mp4"><b></b>01.&#x57FA;&#x4E8E;Zookeeper&#x5B9E;&#x73B0;&#x52A8;&#x6001;&#x8D1F;&#x8F7D;&#x5747;&#x8861;&#x8BFE;&#x7A0B;&#x4ECB;&#x7ECD;.mp4</a></li><li><span class="title-icon "></span><a href="#02zookeeper&#x5B9E;&#x9645;&#x6848;&#x4F8B;&#x4E2D;&#x7684;&#x5E94;&#x7528;&#x573A;&#x666F;mp4"><b></b>02.Zookeeper&#x5B9E;&#x9645;&#x6848;&#x4F8B;&#x4E2D;&#x7684;&#x5E94;&#x7528;&#x573A;&#x666F;.mp4</a></li><li><span class="title-icon "></span><a href="#03zookeeper&#x57FA;&#x672C;&#x7684;&#x5B9E;&#x73B0;&#x7684;&#x7279;&#x5F81;mp4"><b></b>03.Zookeeper&#x57FA;&#x672C;&#x7684;&#x5B9E;&#x73B0;&#x7684;&#x7279;&#x5F81;.mp4</a></li><li><span class="title-icon "></span><a href="#04&#x57FA;&#x4E8E;linux&#x73AF;&#x5883;&#x5B89;&#x88C5;zookeepermp4"><b></b>04.&#x57FA;&#x4E8E;linux&#x73AF;&#x5883;&#x5B89;&#x88C5;Zookeeper.mp4</a></li><ul><li><span class="title-icon "></span><a href="#zookeeper&#x5355;&#x673A;&#x7248;&#x672C;"><b></b>\Z****ookeeper****&#x5355;&#x673A;****&#x7248;&#x672C;**</a></li><ul><li><span class="title-icon "></span><a href="#linux&#x73AF;&#x5883;&#x5B89;&#x88C5;zookeeper"><b></b>\L****inux****&#x73AF;&#x5883;****&#x5B89;&#x88C5;Zookeeper**</a></li></ul></ul><li><span class="title-icon "></span><a href="#&#x6838;&#x5FC3;&#x76F8;&#x5173;&#x547D;&#x4EE4;"><b></b>\&#x6838;&#x5FC3;&#x76F8;&#x5173;****&#x547D;&#x4EE4;**</a></li><li><span class="title-icon "></span><a href="#05&#x6CE8;&#x610F;&#x5B89;&#x88C5;zookeeper&#x524D;&#x5B89;&#x88C5;jdk&#x73AF;&#x5883;mp4"><b></b>05.&#x6CE8;&#x610F;&#x5B89;&#x88C5;Zookeeper&#x524D;&#x5B89;&#x88C5;Jdk&#x73AF;&#x5883;.mp4</a></li><li><span class="title-icon "></span><a href="#06java&#x8BED;&#x8A00;&#x5BA2;&#x6237;&#x7AEF;&#x8FDE;&#x63A5;zookeepermp4"><b></b>06.Java&#x8BED;&#x8A00;&#x5BA2;&#x6237;&#x7AEF;&#x8FDE;&#x63A5;Zookeeper.mp4</a></li><li><span class="title-icon "></span><a href="#07countdown&#x8BA1;&#x7B97;&#x5668;&#x4F18;&#x5316;zk&#x4EE3;&#x7801;mp4"><b></b>07.Countdown&#x8BA1;&#x7B97;&#x5668;&#x4F18;&#x5316;ZK&#x4EE3;&#x7801;.mp4</a></li><li><span class="title-icon "></span><a href="#08zookeeper&#x56DB;&#x79CD;&#x8282;&#x70B9;&#x7C7B;&#x578B;mp4"><b></b>08.Zookeeper&#x56DB;&#x79CD;&#x8282;&#x70B9;&#x7C7B;&#x578B;.mp4</a></li><li><span class="title-icon "></span><a href="#09zookeeper&#x8282;&#x70B9;acl&#x6743;&#x9650;&#x63A7;&#x5236;mp4"><b></b>09.Zookeeper&#x8282;&#x70B9;ACL&#x6743;&#x9650;&#x63A7;&#x5236;.mp4</a></li><li><span class="title-icon "></span><a href="#10&#x4F7F;&#x7528;zookeeper&#x5B9E;&#x73B0;&#x670D;&#x52A1;&#x6CE8;&#x518C;mp4"><b></b>10.&#x4F7F;&#x7528;Zookeeper&#x5B9E;&#x73B0;&#x670D;&#x52A1;&#x6CE8;&#x518C;.mp4</a></li><li><span class="title-icon "></span><a href="#11&#x4F7F;&#x7528;zookeeper&#x5B9E;&#x73B0;&#x670D;&#x52A1;&#x53D1;&#x73B0;mp4"><b></b>11.&#x4F7F;&#x7528;Zookeeper&#x5B9E;&#x73B0;&#x670D;&#x52A1;&#x53D1;&#x73B0;.mp4</a></li></ul></div><a href="#01&#x57FA;&#x4E8E;zookeeper&#x5B9E;&#x73B0;&#x52A8;&#x6001;&#x8D1F;&#x8F7D;&#x5747;&#x8861;&#x8BFE;&#x7A0B;&#x4ECB;&#x7ECD;mp4" id="anchorNavigationExGoTop"><i class="fa fa-arrow-up"></i></a><h1 id="01&#x57FA;&#x4E8E;zookeeper&#x5B9E;&#x73B0;&#x52A8;&#x6001;&#x8D1F;&#x8F7D;&#x5747;&#x8861;&#x8BFE;&#x7A0B;&#x4ECB;&#x7ECD;mp4"><a name="01&#x57FA;&#x4E8E;zookeeper&#x5B9E;&#x73B0;&#x52A8;&#x6001;&#x8D1F;&#x8F7D;&#x5747;&#x8861;&#x8BFE;&#x7A0B;&#x4ECB;&#x7ECD;mp4" class="anchor-navigation-ex-anchor" href="#01&#x57FA;&#x4E8E;zookeeper&#x5B9E;&#x73B0;&#x52A8;&#x6001;&#x8D1F;&#x8F7D;&#x5747;&#x8861;&#x8BFE;&#x7A0B;&#x4ECB;&#x7ECD;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>01.&#x57FA;&#x4E8E;Zookeeper&#x5B9E;&#x73B0;&#x52A8;&#x6001;&#x8D1F;&#x8F7D;&#x5747;&#x8861;&#x8BFE;&#x7A0B;&#x4ECB;&#x7ECD;.mp4</h1>
+<p><a href="README/1625126143056.png" data-lightbox="5a5e3266-86fa-403d-96d0-4cd4edd575f2" data-title="1625126143056"><img src="README/1625126143056.png" alt="1625126143056"></a></p>
+<h1 id="02zookeeper&#x5B9E;&#x9645;&#x6848;&#x4F8B;&#x4E2D;&#x7684;&#x5E94;&#x7528;&#x573A;&#x666F;mp4"><a name="02zookeeper&#x5B9E;&#x9645;&#x6848;&#x4F8B;&#x4E2D;&#x7684;&#x5E94;&#x7528;&#x573A;&#x666F;mp4" class="anchor-navigation-ex-anchor" href="#02zookeeper&#x5B9E;&#x9645;&#x6848;&#x4F8B;&#x4E2D;&#x7684;&#x5E94;&#x7528;&#x573A;&#x666F;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>02.Zookeeper&#x5B9E;&#x9645;&#x6848;&#x4F8B;&#x4E2D;&#x7684;&#x5E94;&#x7528;&#x573A;&#x666F;.mp4</h1>
+<p>zk - &#x5206;&#x5E03;&#x5F0F;&#x9886;&#x57DF;&#x4E2D;&#x7684;&#x534F;&#x8C03;&#x8005;</p>
+<p>zk&#x5E94;&#x7528;&#x573A;&#x666F; &#xFF1A;</p>
+<ol>
+<li>&#x5206;&#x5E03;&#x5F0F;&#x9501; &#xFF08;redis&#x6216;&#x8005;zk&#xFF09;</li>
+<li>Dubbo&#x670D;&#x52A1;&#x6CE8;&#x518C;&#xFF08;zk&#xFF09;</li>
+<li>&#x5206;&#x5E03;&#x5F0F;&#x914D;&#x7F6E;&#x4E2D;&#x5FC3; disconfig&#xFF08;&#x767E;&#x5EA6;&#x7684;&#x4E00;&#x4E2A;&#x6846;&#x67B6;&#xFF0C; &#x5B83;&#x5427;&#x5B83;&#x7684;&#x914D;&#x7F6E;&#x4FE1;&#x606F;&#x653E;&#x5230;&#x4E86;zk&#x4E0A;&#x4E86;&#xFF09;</li>
+<li>&#x5206;&#x5E03;&#x5F0F;&#x6D88;&#x606F;&#x4E2D;&#x95F4;&#x4EF6;</li>
+<li>&#x53D1;&#x5E03;&#x8BA2;&#x9605;&#xFF08;&#x4E8B;&#x4EF6;&#x901A;&#x77E5;&#xFF09;</li>
+<li>Master &#x9009;&#x4E3E;&#xFF08;zk&#x8282;&#x70B9;&#x662F;&#x552F;&#x4E00;&#x7684;&#xFF09;</li>
+</ol>
+<p>zk&#x4E4B;&#x6240;&#x4EE5;&#x80FD;&#x591F;&#x5E2E;&#x6211;&#x4EEC;&#x89E3;&#x51B3;&#x8FD9;&#x4E9B;&#x95EE;&#x9898;&#xFF0C;&#x662F;&#x79BB;&#x4E0D;&#x5F00;zk&#x7684;&#x7279;&#x6027;&#xFF1A; </p>
+<p>Zookeeper&#x7684;&#x7279;&#x6027;&#xFF1A; &#x7C7B;&#x4F3C;&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;</p>
+<p>/</p>
+<p>/mayikt/</p>
+<p>/mayitk/s0</p>
+<hr>
+<p>&#xB7;&#x5206;&#x5E03;&#x5F0F;Zookeeper&#x5FEB;&#x901F;&#x5165;&#x95E8;
+.&#x4EC0;&#x4E48;&#x662F;Zookeeper.
+&#x5B98;&#x65B9;&#x6587;&#x6863;&#x4E0A;&#x8FD9;&#x4E48;&#x89E3;&#x91CA;zookeeper&#xFF0C;&#x5B83;&#x662F;&#x4E00;&#x4E2A;&#x5206;&#x5E03;&#x5F0F;&#x670D;&#x52A1;&#x6846;&#x67B6;&#xFF0C;&#x662F;Apache Hadoop &#x7684;&#x4E00;&#x4E2A;&#x5B50;&#x9879;&#x76EE;&#xFF0C;&#x5B83;&#x4E3B;&#x8981;&#x662F;&#x7528;&#x6765;&#x89E3;&#x51B3;&#x5206;&#x5E03;&#x5F0F;&#x5E94;&#x7528;&#x4E2D;&#x7ECF;&#x5E38;&#x9047;&#x5230;&#x7684;&#x4E00;&#x4E9B;&#x6570;&#x636E;&#x7BA1;&#x7406;&#x95EE;&#x9898;&#xFF0C;&#x5982;:&#x7EDF;&#x4E00;&#x547D;&#x540D;&#x670D;&#x52A1;&#x3001;&#x72B6;&#x6001;&#x540C;&#x6B65;&#x670D;&#x52A1;&#x3001;&#x96C6;&#x7FA4;&#x7BA1;&#x7406;&#x3001;&#x5206;&#x5E03;&#x5F0F;&#x5E94;&#x7528;&#x914D;&#x7F6E;&#x9879;&#x7684;&#x7BA1;&#x7406;&#x7B49;&#x3002;+
+&#x4E0A;&#x9762;&#x7684;&#x89E3;&#x91CA;&#x6709;&#x70B9;&#x62BD;&#x8C61;&#xFF0C;&#x7B80;&#x5355;&#x6765;&#x8BF4;zookeeper=&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;+&#x76D1;&#x542C;&#x901A;&#x77E5;&#x673A;&#x5236;</p>
+<h1 id="03zookeeper&#x57FA;&#x672C;&#x7684;&#x5B9E;&#x73B0;&#x7684;&#x7279;&#x5F81;mp4"><a name="03zookeeper&#x57FA;&#x672C;&#x7684;&#x5B9E;&#x73B0;&#x7684;&#x7279;&#x5F81;mp4" class="anchor-navigation-ex-anchor" href="#03zookeeper&#x57FA;&#x672C;&#x7684;&#x5B9E;&#x73B0;&#x7684;&#x7279;&#x5F81;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>03.Zookeeper&#x57FA;&#x672C;&#x7684;&#x5B9E;&#x73B0;&#x7684;&#x7279;&#x5F81;.mp4</h1>
+<p>&#x3002;</p>
+<hr>
+<p>&#x57FA;&#x672C;&#x7279;&#x6027;: </p>
+<p>&#x5B9A;&#x4E49;&#x7684;&#x8282;&#x70B9;&#x5305;&#x542B;&#x8282;&#x70B9;&#x540D;&#x79F0;&#x548C;&#x8282;&#x70B9;&#x5185;&#x5BB9;</p>
+<p>,&#x5B9A;&#x4E49;&#x7684;&#x8282;&#x70B9;&#x540D;&#x79F0;&#x662F;&#x4E0D;&#x5141;&#x8BB8;&#x6709;&#x91CD;&#x590D;&#x7684;;</p>
+<p>&#x6BCF;&#x4E2A;&#x8282;&#x70B9;&#x90FD;&#x53EF;&#x4EE5;&#x8BBE;&#x7F6E;&#x5BF9;&#x5E94;&#x7684;&#x503C;</p>
+<p>&#x6700;&#x91CD;&#x8981;&#x7684;&#x7279;&#x6027;: &#x8282;&#x70B9;&#x7684;&#x8DEF;&#x5F84;&#x4E0D;&#x5141;&#x8BB8;&#x91CD;&#x590D;,&#x5426;&#x5219;&#x5C31;&#x8FDD;&#x53CD;&#x4E86;&#x5E42;&#x7B49;&#x6027;&#x539F;&#x5219;&#x4E86;</p>
+<p><strong>&#x4E8B;&#x4EF6;&#x901A;&#x77E5;</strong></p>
+<p>&#x6700;&#x540E;&#x603B;&#x7ED3;zk&#x7279;&#x5F81;:</p>
+<ol>
+<li>&#x8282;&#x70B9;&#x540D;&#x79F0;&#x548C;&#x8282;&#x70B9;value&#xFF0C;&#x8DEF;&#x5F84;&#x5FC5;&#x987B;&#x4FDD;&#x8BC1;&#x662F;&#x552F;&#x4E00;&#xFF0C;&#x4E0D;&#x5141;&#x8BB8;&#x91CD;&#x590D;&#x3002;</li>
+<li>&#x6BCF;&#x4E2A;&#x8282;&#x70B9;&#x90FD;&#x4F1A;&#x6709;&#x4E8B;&#x4EF6;&#x901A;&#x77E5;&#xFF0C;&#x5F53;&#x8282;&#x70B9;&#x53D1;&#x751F;&#x4EFB;&#x4F55;&#x53D8;&#x5316;&#x90FD;&#x53EF;&#x4EE5;&#x83B7;&#x53D6;&#x4FE1;&#x606F;;</li>
+</ol>
+<h1 id="04&#x57FA;&#x4E8E;linux&#x73AF;&#x5883;&#x5B89;&#x88C5;zookeepermp4"><a name="04&#x57FA;&#x4E8E;linux&#x73AF;&#x5883;&#x5B89;&#x88C5;zookeepermp4" class="anchor-navigation-ex-anchor" href="#04&#x57FA;&#x4E8E;linux&#x73AF;&#x5883;&#x5B89;&#x88C5;zookeepermp4"><i class="fa fa-link" aria-hidden="true"></i></a>04.&#x57FA;&#x4E8E;linux&#x73AF;&#x5883;&#x5B89;&#x88C5;Zookeeper.mp4</h1>
+<h2 id="zookeeper&#x5355;&#x673A;&#x7248;&#x672C;"><a name="zookeeper&#x5355;&#x673A;&#x7248;&#x672C;" class="anchor-navigation-ex-anchor" href="#zookeeper&#x5355;&#x673A;&#x7248;&#x672C;"><i class="fa fa-link" aria-hidden="true"></i></a><strong><em>\</em>Z*<em>**</em></strong>*ookeeper*<strong>**</strong>*&#x5355;&#x673A;*<strong>**</strong>*&#x7248;&#x672C;*<em>*</em></h2>
+<h3 id="linux&#x73AF;&#x5883;&#x5B89;&#x88C5;zookeeper"><a name="linux&#x73AF;&#x5883;&#x5B89;&#x88C5;zookeeper" class="anchor-navigation-ex-anchor" href="#linux&#x73AF;&#x5883;&#x5B89;&#x88C5;zookeeper"><i class="fa fa-link" aria-hidden="true"></i></a><strong><em>\</em>L*<em>**</em></strong>*inux*<strong>**</strong>*&#x73AF;&#x5883;*<strong>**</strong>*&#x5B89;&#x88C5;Zookeeper*<em>*</em></h3>
+<p>1.&#x89E3;&#x538B;zk&#x538B;&#x7F29;&#x5305;</p>
+<p>tar -zxvf zookeeper-3.4.14.tar.gz</p>
+<p>\2. &#x8FDB;&#x5165;&#x5230;zk&#x76EE;&#x5F55;</p>
+<p>cd zookeeper-3.4.14</p>
+<p>3.&#x5728;zk&#x76EE;&#x5F55;&#x4E2D;&#x521B;&#x5EFA;data&#x548C;logs&#x6587;&#x4EF6;&#x5939;</p>
+<p>mkdir data</p>
+<p>mkdir logs</p>
+<p>4.&#x8FDB;&#x5165;&#x5230;conf&#x76EE;&#x5F55;&#xFF0C;&#x4FEE;&#x6539;&#x6587;&#x4EF6;&#x540D;&#x79F0;</p>
+<p>mv zoo_sample.cfg zoo.cfg</p>
+<p>vi zoo.cfg</p>
+<p>dataDir =/usr/local/zookeeper-3.4.14/data</p>
+<p>dataLogDir=/usr/local/zookeeper-3.4.14/logs</p>
+<p>5.&#x542F;&#x52A8;zk</p>
+<p>./zkServer.sh start</p>
+<p>./zkServer.sh status</p>
+<p><a href="README/1625125064091.png" data-lightbox="e90c80f5-52ab-43af-b488-c5cda4a40463" data-title="1625125064091"><img src="README/1625125064091.png" alt="1625125064091"></a></p>
+<p>&#x5355;&#x673A;&#x542F;&#x52A8;&#x6210;&#x529F;</p>
+<h1 id="&#x6838;&#x5FC3;&#x76F8;&#x5173;&#x547D;&#x4EE4;"><a name="&#x6838;&#x5FC3;&#x76F8;&#x5173;&#x547D;&#x4EE4;" class="anchor-navigation-ex-anchor" href="#&#x6838;&#x5FC3;&#x76F8;&#x5173;&#x547D;&#x4EE4;"><i class="fa fa-link" aria-hidden="true"></i></a><strong><em>\</em>&#x6838;&#x5FC3;&#x76F8;&#x5173;*<em>**</em></strong>*&#x547D;&#x4EE4;*<em>*</em></h1>
+<p>service keepalived start</p>
+<p>service keepalived stop</p>
+<p>systemctl stop firewalld</p>
+<hr>
+<p>zk &#x7684;&#x5DE5;&#x5177;</p>
+<p>&#x6CE8;&#x610F;&#xFF1A;&#x5728;&#x5B89;&#x88C5;Zk&#x7684;&#x65F6;&#x5019;&#x63D0;&#x524D;&#x5B89;&#x88C5;&#x597D;jdk&#x73AF;&#x5883; &#x5EFA;&#x8BAE;java8&#x4EE5;&#x4E0A;</p>
+<h1 id="05&#x6CE8;&#x610F;&#x5B89;&#x88C5;zookeeper&#x524D;&#x5B89;&#x88C5;jdk&#x73AF;&#x5883;mp4"><a name="05&#x6CE8;&#x610F;&#x5B89;&#x88C5;zookeeper&#x524D;&#x5B89;&#x88C5;jdk&#x73AF;&#x5883;mp4" class="anchor-navigation-ex-anchor" href="#05&#x6CE8;&#x610F;&#x5B89;&#x88C5;zookeeper&#x524D;&#x5B89;&#x88C5;jdk&#x73AF;&#x5883;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>05.&#x6CE8;&#x610F;&#x5B89;&#x88C5;Zookeeper&#x524D;&#x5B89;&#x88C5;Jdk&#x73AF;&#x5883;.mp4</h1>
+<p>&#x8981;&#x5B89;&#x88C5;jdk&#x73AF;&#x5883;,&#x914D;&#x7F6E;&#x73AF;&#x5883;&#x53D8;&#x91CF;</p>
+<p>&#x5426;&#x5219;&#x4F1A;&#x62A5;&#x9519;</p>
+<p><a href="README/1625125781892.png" data-lightbox="f3d18518-909a-48e8-bd82-1b3ad2371e65" data-title="1625125781892"><img src="README/1625125781892.png" alt="1625125781892"></a></p>
+<h1 id="06java&#x8BED;&#x8A00;&#x5BA2;&#x6237;&#x7AEF;&#x8FDE;&#x63A5;zookeepermp4"><a name="06java&#x8BED;&#x8A00;&#x5BA2;&#x6237;&#x7AEF;&#x8FDE;&#x63A5;zookeepermp4" class="anchor-navigation-ex-anchor" href="#06java&#x8BED;&#x8A00;&#x5BA2;&#x6237;&#x7AEF;&#x8FDE;&#x63A5;zookeepermp4"><i class="fa fa-link" aria-hidden="true"></i></a>06.Java&#x8BED;&#x8A00;&#x5BA2;&#x6237;&#x7AEF;&#x8FDE;&#x63A5;Zookeeper.mp4</h1>
+<p><a href="README/1625125722375.png" data-lightbox="5bfbe95d-ed16-498d-a4a8-9d1b23cf07be" data-title="1625125722375"><img src="README/1625125722375.png" alt="1625125722375"></a></p>
+<p><a href="README/1625125904330.png" data-lightbox="cbe79976-ad2c-4301-bbbe-95157c39b5f8" data-title="1625125904330"><img src="README/1625125904330.png" alt="1625125904330"></a></p>
+<p><a href="README/1625125735806.png" data-lightbox="a4acc128-6273-4f24-85ea-9e1b3bf65410" data-title="1625125735806"><img src="README/1625125735806.png" alt="1625125735806"></a></p>
+<hr>
+<pre class="language-"><code class="lang-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>mayikt<span class="token punctuation">.</span>zk</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>zookeeper<span class="token punctuation">.</span></span><span class="token operator">*</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span><span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ * ClassName: Test001 &lt;br/&gt;
+ * Description: Test001 &lt;br/&gt;
+ * Date: 2021-07-01 15:58 &lt;br/&gt;
+ * &lt;br/&gt;
+ *
+ * @author yufengming
+ * @version &#x4EA7;&#x54C1;&#x7248;&#x672C;&#x4FE1;&#x606F; 2021-07-01 15:58 yufengming(victorefengming.gitee.io) &#x65B0;&#x5EFA;&lt;br/&gt;
+ * @project mayikt_zk
+ * @package com.mayikt.zk
+ * @email victorfengming@163.com
+ * &lt;p&gt;
+ * &#x4FEE;&#x6539;&#x8BB0;&#x5F55;
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Test001</span> <span class="token punctuation">{</span>
+<span class="token comment">//             * &#x53C2;&#x6570;1. &#x94FE;&#x63A5;&#x5730;&#x5740;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">String</span> ADDRES <span class="token operator">=</span> <span class="token string">&quot;116.62.194.162:2181&quot;</span><span class="token punctuation">;</span>
+<span class="token comment">//         * &#x53C2;&#x6570;2. zk&#x8D85;&#x65F6;&#x4E8B;&#x4EF6;</span>
+        <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">int</span> TIMEOUT <span class="token operator">=</span> <span class="token number">5000</span><span class="token punctuation">;</span>
+
+<span class="token comment">//         * &#x53C2;&#x6570;3. &#x4E8B;&#x4EF6;&#x901A;&#x77E5;</span>
+<span class="token comment">//</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">KeeperException</span><span class="token punctuation">,</span> <span class="token class-name">InterruptedException</span> <span class="token punctuation">{</span>
+        <span class="token comment">// zk &#x6838;&#x5FC3;&#x8282;&#x70B9; + &#x4E8B;&#x4EF6;&#x901A;&#x77E5;</span>
+        <span class="token comment">// &#x8282;&#x70B9;&#x8DEF;&#x5F84; &#x548C;&#x8282;&#x70B9; value</span>
+        <span class="token comment">/**
+         * &#x53C2;&#x6570;1. &#x94FE;&#x63A5;&#x5730;&#x5740;
+         * &#x53C2;&#x6570;2. zk&#x8D85;&#x65F6;&#x4E8B;&#x4EF6;
+         * &#x53C2;&#x6570;3. &#x4E8B;&#x4EF6;&#x901A;&#x77E5;
+         */</span>
+
+        <span class="token comment">// 1. &#x521B;&#x5EFA; zk&#x94FE;&#x63A5;</span>
+        <span class="token class-name">ZooKeeper</span> zooKeeper <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ZooKeeper</span><span class="token punctuation">(</span>ADDRES<span class="token punctuation">,</span> TIMEOUT<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">Watcher</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token annotation punctuation">@Override</span>
+            <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">process</span><span class="token punctuation">(</span><span class="token class-name">WatchedEvent</span> watchedEvent<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token class-name">Event<span class="token punctuation">.</span>KeeperState</span> state <span class="token operator">=</span> watchedEvent<span class="token punctuation">.</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>state <span class="token operator">==</span> <span class="token class-name">Event<span class="token punctuation">.</span>KeeperState<span class="token punctuation">.</span>SyncConnected</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;&#x94FE;&#x63A5;&#x6210;&#x529F;!!!&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// &#x521B;&#x5EFA;&#x6211;&#x95E8;&#x7684;&#x8282;&#x70B9;</span>
+        <span class="token comment">// &#x53C2;&#x6570;1 &#x8DEF;&#x5F84;&#x540D;&#x79F0;</span>
+        <span class="token comment">// &#x53C2;&#x6570;2 &#x8282;&#x70B9;value</span>
+        <span class="token comment">// &#x53C2;&#x6570;3. &#x8282;&#x70B9;&#x6743;&#x9650; acl        OPEN_ACL_UNSAFE &#x5F00;&#x653E;&#x6743;&#x9650;</span>
+        <span class="token comment">// &#x53C2;&#x6570;4 &#x8282;&#x70B9;&#x7C7B;&#x578B; &#x4E34;&#x65F6;&#x548C;&#x6C38;&#x4E45;</span>
+        <span class="token class-name">String</span> s <span class="token operator">=</span> zooKeeper<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token string">&quot;/mayikt&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;mayikt&quot;</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">ZooDefs<span class="token punctuation">.</span>Ids</span><span class="token punctuation">.</span>OPEN_ACL_UNSAFE<span class="token punctuation">,</span> <span class="token class-name">CreateMode</span><span class="token punctuation">.</span>PERSISTENT<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">//</span>
+
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>&#x8FD9;&#x91CC;&#x53EF;&#x4EE5;&#x5229;&#x7528;java8&#x65B0;&#x7279;&#x6027;,&#x6765;&#x5229;&#x7528;lambda&#x8868;&#x8FBE;&#x5F0F;&#x8FDB;&#x884C;&#x6539;&#x8FDB;</p>
+<p>&#x8FD0;&#x884C;</p>
+<p><a href="README/1625127083034.png" data-lightbox="ee8ed2b9-e43e-4962-8874-286f83cc8b41" data-title="1625127083034"><img src="README/1625127083034.png" alt="1625127083034"></a></p>
+<p><a href="README/1625127203248.png" data-lightbox="b7f7ab47-7c23-473d-a592-f1c6aaeed7c0" data-title="1625127203248"><img src="README/1625127203248.png" alt="1625127203248"></a></p>
+<p><a href="README/1625127216500.png" data-lightbox="cb0b00b1-7040-4649-847e-e6b324e94316" data-title="1625127216500"><img src="README/1625127216500.png" alt="1625127216500"></a></p>
+<h1 id="07countdown&#x8BA1;&#x7B97;&#x5668;&#x4F18;&#x5316;zk&#x4EE3;&#x7801;mp4"><a name="07countdown&#x8BA1;&#x7B97;&#x5668;&#x4F18;&#x5316;zk&#x4EE3;&#x7801;mp4" class="anchor-navigation-ex-anchor" href="#07countdown&#x8BA1;&#x7B97;&#x5668;&#x4F18;&#x5316;zk&#x4EE3;&#x7801;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>07.Countdown&#x8BA1;&#x7B97;&#x5668;&#x4F18;&#x5316;ZK&#x4EE3;&#x7801;.mp4</h1>
+<p>&#x4E4B;&#x524D;&#x7684;&#x5199;&#x6CD5;&#x6709;bug</p>
+<p>&#x4E3E;&#x4E2A;&#x4F8B;&#x5B50;:&#x5982;&#x679C;&#x6211;zk&#x6CA1;&#x6709;&#x94FE;&#x63A5;&#x6210;&#x529F;</p>
+<p>&#x90A3;&#x4E48;</p>
+<p>&#x5C31;</p>
+<p>&#x5C31;</p>
+<p>&#x540E;&#x9762;&#x5C31;&#x62A5;&#x9519;&#x4E86;</p>
+<pre class="language-"><code class="lang-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>mayikt<span class="token punctuation">.</span>zk</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>zookeeper<span class="token punctuation">.</span></span><span class="token operator">*</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span><span class="token class-name">CountDownLatch</span><span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ * ClassName: Test001 &lt;br/&gt;
+ * Description: Test001 &lt;br/&gt;
+ * Date: 2021-07-01 15:58 &lt;br/&gt;
+ * &lt;br/&gt;
+ *
+ * @author yufengming
+ * @version &#x4EA7;&#x54C1;&#x7248;&#x672C;&#x4FE1;&#x606F; 2021-07-01 15:58 yufengming(victorefengming.gitee.io) &#x65B0;&#x5EFA;&lt;br/&gt;
+ * @project mayikt_zk
+ * @package com.mayikt.zk
+ * @email victorfengming@163.com
+ * &lt;p&gt;
+ * &#x4FEE;&#x6539;&#x8BB0;&#x5F55;
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Test001</span> <span class="token punctuation">{</span>
+    <span class="token comment">//         * &#x53C2;&#x6570;1. &#x94FE;&#x63A5;&#x5730;&#x5740;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">String</span> ADDRES <span class="token operator">=</span> <span class="token string">&quot;116.62.194.162:2181&quot;</span><span class="token punctuation">;</span>
+    <span class="token comment">//         * &#x53C2;&#x6570;2. zk&#x8D85;&#x65F6;&#x4E8B;&#x4EF6;</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">int</span> TIMEOUT <span class="token operator">=</span> <span class="token number">5000</span><span class="token punctuation">;</span>
+
+    <span class="token comment">//         * &#x53C2;&#x6570;3. &#x4E8B;&#x4EF6;&#x901A;&#x77E5;</span>
+<span class="token comment">//</span>
+
+    <span class="token comment">// countDownLatch&#x8BA1;&#x6570;&#x5668;</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token class-name">CountDownLatch</span> countDownLatch <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CountDownLatch</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">KeeperException</span><span class="token punctuation">,</span> <span class="token class-name">InterruptedException</span> <span class="token punctuation">{</span>
+        <span class="token comment">// zk &#x6838;&#x5FC3;&#x8282;&#x70B9; + &#x4E8B;&#x4EF6;&#x901A;&#x77E5;</span>
+        <span class="token comment">// &#x8282;&#x70B9;&#x8DEF;&#x5F84; &#x548C;&#x8282;&#x70B9; value</span>
+        <span class="token comment">/**
+         * &#x53C2;&#x6570;1. &#x94FE;&#x63A5;&#x5730;&#x5740;
+         * &#x53C2;&#x6570;2. zk&#x8D85;&#x65F6;&#x4E8B;&#x4EF6;
+         * &#x53C2;&#x6570;3. &#x4E8B;&#x4EF6;&#x901A;&#x77E5;
+         */</span>
+
+        <span class="token comment">// 1. &#x521B;&#x5EFA; zk&#x94FE;&#x63A5;</span>
+        <span class="token class-name">ZooKeeper</span> zooKeeper <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ZooKeeper</span><span class="token punctuation">(</span>ADDRES<span class="token punctuation">,</span> TIMEOUT<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">Watcher</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token annotation punctuation">@Override</span>
+            <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">process</span><span class="token punctuation">(</span><span class="token class-name">WatchedEvent</span> watchedEvent<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token class-name">Event<span class="token punctuation">.</span>KeeperState</span> state <span class="token operator">=</span> watchedEvent<span class="token punctuation">.</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>state <span class="token operator">==</span> <span class="token class-name">Event<span class="token punctuation">.</span>KeeperState<span class="token punctuation">.</span>SyncConnected</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;zk&#x94FE;&#x63A5;&#x6210;&#x529F;!!!&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                                        <span class="token comment">// &#x8BA1;&#x6570;&#x5668;&#x51CF;&#x4E00;</span>
+                    countDownLatch<span class="token punctuation">.</span><span class="token function">countDown</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;zk &#x6B63;&#x5728;&#x94FE;&#x63A5;&#x7B49;&#x5F85;...&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// &#x8BA1;&#x6570;&#x5668; &#x7ED3;&#x679C;&#x5FC5;&#x987B;&#x4E3A;0 &#x624D;&#x80FD;&#x7EE7;&#x7EED;&#x6267;&#x884C;</span>
+        countDownLatch<span class="token punctuation">.</span><span class="token function">await</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;&#x5F00;&#x59CB;&#x521B;&#x5EFA;&#x8282;&#x70B9;&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// 2. &#x521B;&#x5EFA;&#x6211;&#x95E8;&#x7684;&#x8282;&#x70B9;</span>
+        <span class="token comment">// &#x53C2;&#x6570;1 &#x8DEF;&#x5F84;&#x540D;&#x79F0;</span>
+        <span class="token comment">// &#x53C2;&#x6570;2 &#x8282;&#x70B9;value</span>
+        <span class="token comment">// &#x53C2;&#x6570;3. &#x8282;&#x70B9;&#x6743;&#x9650; acl        OPEN_ACL_UNSAFE &#x5F00;&#x653E;&#x6743;&#x9650;</span>
+        <span class="token comment">// &#x53C2;&#x6570;4 &#x8282;&#x70B9;&#x7C7B;&#x578B; &#x4E34;&#x65F6;&#x548C;&#x6C38;&#x4E45;</span>
+        <span class="token class-name">String</span> s <span class="token operator">=</span> zooKeeper<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token string">&quot;/mayikt2&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;mayikt2_content&quot;</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">ZooDefs<span class="token punctuation">.</span>Ids</span><span class="token punctuation">.</span>OPEN_ACL_UNSAFE<span class="token punctuation">,</span> <span class="token class-name">CreateMode</span><span class="token punctuation">.</span>PERSISTENT<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">//</span>
+
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><a href="README/1625127789646.png" data-lightbox="eb3fb34c-f9b7-4f63-8f16-e9d7e0ac113a" data-title="1625127789646"><img src="README/1625127789646.png" alt="1625127789646"></a></p>
+<p><a href="README/1625127924734.png" data-lightbox="68df2464-a437-4dfb-a5ea-a941f1398ee4" data-title="1625127924734"><img src="README/1625127924734.png" alt="1625127924734"></a></p>
+<h1 id="08zookeeper&#x56DB;&#x79CD;&#x8282;&#x70B9;&#x7C7B;&#x578B;mp4"><a name="08zookeeper&#x56DB;&#x79CD;&#x8282;&#x70B9;&#x7C7B;&#x578B;mp4" class="anchor-navigation-ex-anchor" href="#08zookeeper&#x56DB;&#x79CD;&#x8282;&#x70B9;&#x7C7B;&#x578B;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>08.Zookeeper&#x56DB;&#x79CD;&#x8282;&#x70B9;&#x7C7B;&#x578B;.mp4</h1>
+<pre class="language-"><code class="lang-java"><span class="token class-name">String</span> s <span class="token operator">=</span> zooKeeper<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token string">&quot;/mayikt3&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;mayikt3_content&quot;</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">ZooDefs<span class="token punctuation">.</span>Ids</span><span class="token punctuation">.</span>OPEN_ACL_UNSAFE<span class="token punctuation">,</span> <span class="token class-name">CreateMode</span><span class="token punctuation">.</span>EPHEMERAL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<pre class="language-"><code class="lang-cmd">zk &#x6B63;&#x5728;&#x94FE;&#x63A5;&#x7B49;&#x5F85;...
+zk&#x94FE;&#x63A5;&#x6210;&#x529F;!!!
+&#x5F00;&#x59CB;&#x521B;&#x5EFA;&#x8282;&#x70B9;
+/mayikt3
+
+Process finished with exit code 0
+</code></pre>
+<p><a href="README/1625128452457.png" data-lightbox="5d867ff9-a370-4bb1-8db7-b440303140b8" data-title="1625128452457"><img src="README/1625128452457.png" alt="1625128452457"></a></p>
+<p>&#x4F1A;&#x53D1;&#x73B0; - &#x521B;&#x5EFA;&#x5B8C;&#x4E86;&#x6CA1;&#x6709; &#x8282;&#x70B9;&#x6570;&#x636E; ,</p>
+<p>&#x5C31;&#x79BB;&#x8C31;</p>
+<p>&#x56E0;&#x4E3A;&#x6211;&#x8FD9;&#x4E2A;&#x4F1A;&#x8BDD;&#x5DF2;&#x7ECF;&#x5173;&#x95ED;&#x4E86;</p>
+<p>&#x4F60;&#x5982;&#x679C;&#x6709;&#x60F3;&#x8981;&#x770B;&#x5230;&#x6548;&#x679C;&#x4F60;&#x53EF;&#x4EE5;&#x641E;&#x4E00;&#x4E2A;&#x7B49;&#x5F85;</p>
+<pre class="language-"><code class="lang-java">        <span class="token class-name">Thread</span><span class="token punctuation">.</span><span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">5000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p><a href="README/1625128706675.png" data-lightbox="a9af3f61-3d8d-4de3-9f01-5fc6683281cd" data-title="1625128706675"><img src="README/1625128706675.png" alt="1625128706675"></a></p>
+<p>&#x5C31;&#x80FD;&#x770B;&#x5230;&#x4E00;&#x77AC;&#x95F4;</p>
+<p>&#x7136;&#x540E;&#x5C31;</p>
+<p><a href="README/1625128738396.png" data-lightbox="09278d61-24c7-4ccd-95f1-c1f73cdfbc2c" data-title="1625128738396"><img src="README/1625128738396.png" alt="1625128738396"></a></p>
+<pre class="language-"><code class="lang-java">        <span class="token comment">/**
+         * zk &#x8282;&#x70B9;&#x5206;&#x4E3A;4&#x79CD;&#x7C7B;&#x578B;
+         * 1. &#x4E34;&#x65F6;&#x8282;&#x70B9; - &#x4F1A;&#x8BDD;&#x5173;&#x95ED;&#x5C31;&#x6CA1;&#x4E86; CreateMode.EPHEMERAL
+         * 2. &#x6301;&#x4E45;&#x8282;&#x70B9; - &#x5B58;&#x5230;&#x786C;&#x76D8;&#x4E2D;,&#x5B83;&#x4E0D;&#x6CA1; CreateMode.PERSISTENT
+         * 3. &#x4E34;&#x65F6;&#x6709;&#x5E8F;&#x53F7;&#x8282;&#x70B9; CreateMode.EPHEMERAL_SEQUENTIAL
+         * 4. &#x6301;&#x4E45;&#x6709;&#x5E8F;&#x53F7;&#x8282;&#x70B9; CreateMode.PERSISTENT_SEQUENTIAL
+         */</span>
+</code></pre>
+<hr>
+<p>&#x4E0D;&#x80FD;&#x76F4;&#x63A5;&#x521B;&#x5EFA; &#x591A;&#x7EA7;&#x522B; &#x8282;&#x70B9;</p>
+<pre class="language-"><code class="lang-java"><span class="token class-name">String</span> s <span class="token operator">=</span> zooKeeper<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token string">&quot;/victor/s1&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;content1&quot;</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">ZooDefs<span class="token punctuation">.</span>Ids</span><span class="token punctuation">.</span>OPEN_ACL_UNSAFE<span class="token punctuation">,</span> <span class="token class-name">CreateMode</span><span class="token punctuation">.</span>PERSISTENT_SEQUENTIAL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<pre class="language-"><code class="lang-shell">zk &#x6B63;&#x5728;&#x94FE;&#x63A5;&#x7B49;&#x5F85;...
+zk&#x94FE;&#x63A5;&#x6210;&#x529F;!!!
+&#x5F00;&#x59CB;&#x521B;&#x5EFA;&#x8282;&#x70B9;
+Exception in thread &quot;main&quot; org.apache.zookeeper.KeeperException$NoNodeException: KeeperErrorCode = NoNode for /victor/s1
+    at org.apache.zookeeper.KeeperException.create(KeeperException.java:111)
+    at org.apache.zookeeper.KeeperException.create(KeeperException.java:51)
+    at org.apache.zookeeper.ZooKeeper.create(ZooKeeper.java:783)
+    at com.mayikt.zk.Test001.main(Test001.java:68)
+
+Process finished with exit code 1
+</code></pre>
+<hr>
+<p>acl&#x6743;&#x9650;</p>
+<p>&#x6211;&#x4EEC;&#x4E4B;&#x524D;&#x521B;&#x5EFA;&#x7684; &#x6743;&#x9650; &#x662F;&#x90FD;&#x53EF;&#x4EE5;&#x8BBF;&#x95EE;&#x7684;</p>
+<hr>
+<h1 id="09zookeeper&#x8282;&#x70B9;acl&#x6743;&#x9650;&#x63A7;&#x5236;mp4"><a name="09zookeeper&#x8282;&#x70B9;acl&#x6743;&#x9650;&#x63A7;&#x5236;mp4" class="anchor-navigation-ex-anchor" href="#09zookeeper&#x8282;&#x70B9;acl&#x6743;&#x9650;&#x63A7;&#x5236;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>09.Zookeeper&#x8282;&#x70B9;ACL&#x6743;&#x9650;&#x63A7;&#x5236;.mp4</h1>
+<pre class="language-"><code class="lang-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>mayikt<span class="token punctuation">.</span>zk</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>zookeeper<span class="token punctuation">.</span></span><span class="token operator">*</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>zookeeper<span class="token punctuation">.</span>data<span class="token punctuation">.</span></span>ACL<span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>zookeeper<span class="token punctuation">.</span>data<span class="token punctuation">.</span></span><span class="token class-name">Id</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>zookeeper<span class="token punctuation">.</span>server<span class="token punctuation">.</span>auth<span class="token punctuation">.</span></span><span class="token class-name">DigestAuthenticationProvider</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>security<span class="token punctuation">.</span></span><span class="token class-name">NoSuchAlgorithmException</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">ArrayList</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span><span class="token class-name">CountDownLatch</span><span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ * ClassName: Test001 &lt;br/&gt;
+ * Description: Test001 &lt;br/&gt;
+ * Date: 2021-07-01 15:58 &lt;br/&gt;
+ * &lt;br/&gt;
+ *
+ * @author yufengming
+ * @version &#x4EA7;&#x54C1;&#x7248;&#x672C;&#x4FE1;&#x606F; 2021-07-01 15:58 yufengming(victorefengming.gitee.io) &#x65B0;&#x5EFA;&lt;br/&gt;
+ * @project mayikt_zk
+ * @package com.mayikt.zk
+ * @email victorfengming@163.com
+ * &lt;p&gt;
+ * &#x4FEE;&#x6539;&#x8BB0;&#x5F55;
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Test002</span> <span class="token punctuation">{</span>
+    <span class="token comment">//         * &#x53C2;&#x6570;1. &#x94FE;&#x63A5;&#x5730;&#x5740;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">String</span> ADDRES <span class="token operator">=</span> <span class="token string">&quot;116.62.194.162:2181&quot;</span><span class="token punctuation">;</span>
+    <span class="token comment">//         * &#x53C2;&#x6570;2. zk&#x8D85;&#x65F6;&#x4E8B;&#x4EF6;</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">int</span> TIMEOUT <span class="token operator">=</span> <span class="token number">5000</span><span class="token punctuation">;</span>
+
+    <span class="token comment">//         * &#x53C2;&#x6570;3. &#x4E8B;&#x4EF6;&#x901A;&#x77E5;</span>
+
+    <span class="token comment">// countDownLatch&#x8BA1;&#x6570;&#x5668;</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token class-name">CountDownLatch</span> countDownLatch <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CountDownLatch</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">KeeperException</span><span class="token punctuation">,</span> <span class="token class-name">InterruptedException</span><span class="token punctuation">,</span> <span class="token class-name">NoSuchAlgorithmException</span> <span class="token punctuation">{</span>
+        <span class="token comment">// zk &#x6838;&#x5FC3;&#x8282;&#x70B9; + &#x4E8B;&#x4EF6;&#x901A;&#x77E5;</span>
+        <span class="token comment">// &#x8282;&#x70B9;&#x8DEF;&#x5F84; &#x548C;&#x8282;&#x70B9; value</span>
+        <span class="token comment">/**
+         * &#x53C2;&#x6570;1. &#x94FE;&#x63A5;&#x5730;&#x5740;
+         * &#x53C2;&#x6570;2. zk&#x8D85;&#x65F6;&#x4E8B;&#x4EF6;
+         * &#x53C2;&#x6570;3. &#x4E8B;&#x4EF6;&#x901A;&#x77E5;
+         */</span>
+
+        <span class="token comment">// 1. &#x521B;&#x5EFA; zk&#x94FE;&#x63A5;</span>
+        <span class="token class-name">ZooKeeper</span> zooKeeper <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ZooKeeper</span><span class="token punctuation">(</span>ADDRES<span class="token punctuation">,</span> TIMEOUT<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">Watcher</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token annotation punctuation">@Override</span>
+            <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">process</span><span class="token punctuation">(</span><span class="token class-name">WatchedEvent</span> watchedEvent<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token class-name">Event<span class="token punctuation">.</span>KeeperState</span> state <span class="token operator">=</span> watchedEvent<span class="token punctuation">.</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>state <span class="token operator">==</span> <span class="token class-name">Event<span class="token punctuation">.</span>KeeperState<span class="token punctuation">.</span>SyncConnected</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;zk&#x94FE;&#x63A5;&#x6210;&#x529F;!!!&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token comment">// &#x8BA1;&#x6570;&#x5668;&#x51CF;&#x4E00;</span>
+                    countDownLatch<span class="token punctuation">.</span><span class="token function">countDown</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;zk &#x6B63;&#x5728;&#x94FE;&#x63A5;&#x7B49;&#x5F85;...&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// &#x8BA1;&#x6570;&#x5668; &#x7ED3;&#x679C;&#x5FC5;&#x987B;&#x4E3A;0 &#x624D;&#x80FD;&#x7EE7;&#x7EED;&#x6267;&#x884C;</span>
+        countDownLatch<span class="token punctuation">.</span><span class="token function">await</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;&#x5F00;&#x59CB;&#x521B;&#x5EFA;&#x8282;&#x70B9;&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// 1.2 .&#x521B;&#x5EFA;&#x8D26;&#x53F7;&#x6743;&#x9650; admin&#x53EF;&#x4EE5;&#x5B9E;&#x73B0;&#x8BFB;&#x5199;&#x64CD;&#x4F5C;</span>
+        <span class="token class-name">Id</span> id1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Id</span><span class="token punctuation">(</span><span class="token string">&quot;digest&quot;</span><span class="token punctuation">,</span> <span class="token class-name">DigestAuthenticationProvider</span><span class="token punctuation">.</span><span class="token function">generateDigest</span><span class="token punctuation">(</span><span class="token string">&quot;admin:admin123&quot;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">ACL</span> acl1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token function">ACL</span><span class="token punctuation">(</span><span class="token class-name">ZooDefs<span class="token punctuation">.</span>Perms</span><span class="token punctuation">.</span>ALL<span class="token punctuation">,</span> id1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 3.&#x521B;&#x5EFA;&#x6743;&#x9650;guest &#x53EA;&#x5141;&#x8BB8;&#x505A;&#x8BFB;&#x64CD;&#x4F5C;</span>
+        <span class="token class-name">Id</span> id2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Id</span><span class="token punctuation">(</span><span class="token string">&quot;digest&quot;</span><span class="token punctuation">,</span> <span class="token class-name">DigestAuthenticationProvider</span><span class="token punctuation">.</span><span class="token function">generateDigest</span><span class="token punctuation">(</span><span class="token string">&quot;guest:guest123&quot;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">ACL</span> acl2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token function">ACL</span><span class="token punctuation">(</span><span class="token class-name">ZooDefs<span class="token punctuation">.</span>Perms</span><span class="token punctuation">.</span>READ<span class="token punctuation">,</span> id2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+        <span class="token comment">// 4.&#x6DFB;&#x52A0;&#x8BE5;&#x8D26;&#x53F7;</span>
+        <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span>ACL<span class="token punctuation">&gt;</span></span> aces <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span>ACL<span class="token punctuation">&gt;</span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        aces<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>acl1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        aces<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>acl2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+        <span class="token comment">// 2. &#x521B;&#x5EFA;&#x6211;&#x95E8;&#x7684;&#x8282;&#x70B9;</span>
+        <span class="token comment">// &#x53C2;&#x6570;1 &#x8DEF;&#x5F84;&#x540D;&#x79F0;</span>
+        <span class="token comment">// &#x53C2;&#x6570;2 &#x8282;&#x70B9;value</span>
+        <span class="token comment">// &#x53C2;&#x6570;3. &#x8282;&#x70B9;&#x6743;&#x9650; acl        OPEN_ACL_UNSAFE &#x5F00;&#x653E;&#x6743;&#x9650;</span>
+        <span class="token comment">// &#x53C2;&#x6570;4 &#x8282;&#x70B9;&#x7C7B;&#x578B; &#x4E34;&#x65F6;&#x548C;&#x6C38;&#x4E45;</span>
+
+        <span class="token class-name">String</span> s <span class="token operator">=</span> zooKeeper<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token string">&quot;/meite&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;content&quot;</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> aces<span class="token punctuation">,</span> <span class="token class-name">CreateMode</span><span class="token punctuation">.</span>PERSISTENT<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><a href="README/1625129949201.png" data-lightbox="0c4a9b1e-11ed-4a6e-867f-daa9adc23c53" data-title="1625129949201"><img src="README/1625129949201.png" alt="1625129949201"></a></p>
+<p>&#x4F46;&#x662F; meite&#x4E0B;&#x9762;&#x6CA1;&#x6709;&#x503C;,&#x56E0;&#x4E3A;&#x6CA1;&#x6709;&#x6743;&#x9650;&#x67E5;&#x770B;</p>
+<h1 id="10&#x4F7F;&#x7528;zookeeper&#x5B9E;&#x73B0;&#x670D;&#x52A1;&#x6CE8;&#x518C;mp4"><a name="10&#x4F7F;&#x7528;zookeeper&#x5B9E;&#x73B0;&#x670D;&#x52A1;&#x6CE8;&#x518C;mp4" class="anchor-navigation-ex-anchor" href="#10&#x4F7F;&#x7528;zookeeper&#x5B9E;&#x73B0;&#x670D;&#x52A1;&#x6CE8;&#x518C;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>10.&#x4F7F;&#x7528;Zookeeper&#x5B9E;&#x73B0;&#x670D;&#x52A1;&#x6CE8;&#x518C;.mp4</h1>
+<h1 id="11&#x4F7F;&#x7528;zookeeper&#x5B9E;&#x73B0;&#x670D;&#x52A1;&#x53D1;&#x73B0;mp4"><a name="11&#x4F7F;&#x7528;zookeeper&#x5B9E;&#x73B0;&#x670D;&#x52A1;&#x53D1;&#x73B0;mp4" class="anchor-navigation-ex-anchor" href="#11&#x4F7F;&#x7528;zookeeper&#x5B9E;&#x73B0;&#x670D;&#x52A1;&#x53D1;&#x73B0;mp4"><i class="fa fa-link" aria-hidden="true"></i></a>11.&#x4F7F;&#x7528;Zookeeper&#x5B9E;&#x73B0;&#x670D;&#x52A1;&#x53D1;&#x73B0;.mp4<hr><div id="vcomments"></div><script src="//unpkg.com/valine/dist/Valine.min.js"></script><script>new Valine({el: "#vcomments",appId: 'CHjATxRcQrXst8eJrdwX0vjz-gzGzoHsz',appKey: 'nWerbwV2WMAxOEmAMkJKvXzs',placeholder: 'Just go go',avatar: '',meta: undefined,pageSize: 10,lang: 'zh-CN',recordIP: false})</script></h1>
+<footer class="page-footer"><span class="copyright">victorfengming.gitee.io&#xFF0C;&#x4F7F;&#x7528;<a href="https://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank">&#x7F72;&#x540D;4.0&#x56FD;&#x9645;(CC BY 4.0)&#x534F;&#x8BAE;</a>&#x53D1;&#x5E03; all right reserved&#xFF0C;powered by Gitbook</span><span class="footer-modification">&#x6700;&#x540E;&#x66F4;&#x65B0;&#xFF1A;
+2021-07-01 16:59:48
+</span></footer></body></html>
+<script>console.log("plugin-popup....");document.onclick = function(e){ e.target.tagName === "IMG" && window.open(e.target.src,e.target.src)}</script><style>img{cursor:pointer}</style>
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="../../" class="navigation navigation-prev " aria-label="Previous page: Introduction">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="../02_基于Zookeeper实现分布式锁/" class="navigation navigation-next " aria-label="Next page: 02_基于Zookeeper实现分布式锁">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"01_基于Zookeeper实现服务注册与发现","level":"1.2","depth":1,"next":{"title":"02_基于Zookeeper实现分布式锁","level":"1.3","depth":1,"path":"meite/02_基于Zookeeper实现分布式锁/README.md","ref":"meite/02_基于Zookeeper实现分布式锁/README.md","articles":[]},"previous":{"title":"Introduction","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["code","valine","hide-element","chapter-fold","expandable-chapters","favicon","lightbox","splitter","-lunr","pageview-count","ancre-navigation","-search","search-plus","-highlight","popup","prism","prism-themes","-sharing","sharing-plus","tbfed-pagefooter","toolbar-button"],"root":"./src","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"tbfed-pagefooter":{"copyright":"victorfengming.gitee.io，使用<a href='https://creativecommons.org/licenses/by/4.0/deed.zh'>署名4.0国际(CC BY 4.0)协议</a>发布","modify_label":"最后更新：","modify_format":"YYYY-MM-DD HH:mm:ss"},"chapter-fold":{},"prism":{"css":["prism-themes/themes/prism-atom-dark.css"]},"toolbar-button":{"label":"下载PDF","url":"https://victorfengming.gitee.io/zookeeper/","icon":"fa-file-pdf-o"},"splitter":{},"sharing-plus":{"qq":false,"all":["facebook","google","twitter","instapaper","linkedin","pocket","stumbleupon"],"douban":false,"facebook":true,"weibo":false,"instapaper":false,"whatsapp":false,"hatenaBookmark":false,"twitter":true,"messenger":false,"line":false,"vk":false,"pocket":true,"google":false,"viber":false,"stumbleupon":false,"qzone":false,"linkedin":false},"popup":{},"code":{"copyButtons":true},"hide-element":{"elements":[".gitbook-link"]},"fontsettings":{"theme":"white","family":"sans","size":2},"favicon":{"shortcut":"./img/avator.png.icon.ico","bookmark":"./img/avator.png.icon.ico"},"lightbox":{"jquery":true,"sameUuid":false},"pageview-count":{},"prism-themes":{},"ancre-navigation":{"showLevel":true,"associatedWithSummary":true,"mode":"float","printLog":false,"multipleH1":true,"float":{"showLevelIcon":false,"level1Icon":"","level2Icon":"","level3Icon":""},"pageTop":{"showLevelIcon":false,"level1Icon":"","level2Icon":"","level3Icon":""}},"sharing":{"qq":true,"all":["douban","facebook","google","instapaper","line","linkedin","messenger","pocket","qq","qzone","stumbleupon","twitter","viber","vk","weibo","whatsapp"],"douban":false,"facebook":false,"weibo":true,"instapaper":false,"whatsapp":false,"hatenaBookmark":false,"twitter":true,"messenger":false,"line":false,"vk":false,"pocket":false,"google":false,"viber":false,"stumbleupon":false,"qzone":true,"linkedin":false},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"expandable-chapters":{},"valine":{"placeholder":"Just go go","avatar":"","pageSize":10,"lang":"zh-CN","recordIP":false,"appId":"CHjATxRcQrXst8eJrdwX0vjz-gzGzoHsz","appKey":"nWerbwV2WMAxOEmAMkJKvXzs"},"search-plus":{}},"theme":"default","author":"Victor <victorfengming@163.com>","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"zookeeper","language":"zh-hans","links":{"sidebar":{"文档索引页":"https://victorfengming.gitee.io/index/gitbook/"}},"gitbook":"3.2.3","description":"zookeeper,分布式协调框架"},"file":{"path":"meite/01_基于Zookeeper实现服务注册与发现/README.md","mtime":"2021-07-01T08:59:48.965Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-10-28T03:01:09.587Z"},"basePath":"../..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-code/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-hide-element/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-chapter-fold/chapter-fold.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-expandable-chapters/expandable-chapters.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lightbox/js/lightbox.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-splitter/splitter.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-pageview-count/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search-plus/jquery.mark.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search-plus/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-sharing-plus/buttons.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-toolbar-button/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
